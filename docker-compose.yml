@@ -1,0 +1,39 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      - NODE_ENV=development
+      - PORT=8080
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=devopsuser
+      - DB_PASSWORD=devopspass
+      - DB_NAME=devopsdb
+      - REDIS_HOST=cache
+      - REDIS_PORT=6379
+    depends_on:
+      - db
+      - cache
+    volumes:
+      - ./src:/app/src
+
+  db:
+    image: postgres:13
+    environment:
+      - POSTGRES_DB=devopsdb
+      - POSTGRES_USER=devopsuser
+      - POSTGRES_PASSWORD=devopspass
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  cache:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+
+volumes:
+  postgres_data:

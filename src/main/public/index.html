@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GitContributionTracker</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0f172a;
+        --card: #1e293b;
+        --text: #f8fafc;
+        --primary: #3b82f6;
+      }
+      body {
+        font-family: "Segoe UI", Tahoma, sans-serif;
+        background-color: var(--bg);
+        color: var(--text);
+        margin: 0;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .header {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+      .header i {
+        color: var(--primary);
+        font-size: 2em;
+        margin-bottom: 10px;
+      }
+
+      .layout {
+        display: flex;
+        gap: 20px;
+        width: 100%;
+        max-width: 900px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      .main-content {
+        flex: 2;
+        min-width: 300px;
+      }
+      .sidebar {
+        flex: 1;
+        min-width: 250px;
+        background: var(--card);
+        padding: 20px;
+        border-radius: 12px;
+        height: fit-content;
+        border: 1px solid #334155;
+      }
+
+      .search-box {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+      }
+      input {
+        flex: 1;
+        padding: 12px;
+        border-radius: 8px;
+        border: 1px solid #334155;
+        background: var(--card);
+        color: white;
+      }
+      button {
+        padding: 12px 20px;
+        border-radius: 8px;
+        border: none;
+        background: var(--primary);
+        color: white;
+        cursor: pointer;
+      }
+
+      .card {
+        background: var(--card);
+        padding: 20px;
+        border-radius: 12px;
+        border: 1px solid #334155;
+        margin-bottom: 20px;
+      }
+      .profile {
+        display: flex;
+        gap: 20px;
+        align-items: center;
+      }
+      .profile img {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        border: 3px solid var(--primary);
+      }
+      .history-item {
+        padding: 10px 0;
+        border-bottom: 1px solid #334155;
+        font-size: 14px;
+      }
+      .history-item:last-child {
+        border-bottom: none;
+      }
+
+      #dashboard-content {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <i class="fab fa-github"></i>
+      <h1>GitTrack Enterprise</h1>
+    </div>
+
+    <div class="layout">
+      <div class="main-content">
+        <div class="search-box">
+          <input
+            type="text"
+            id="username"
+            placeholder="Search GitHub username..."
+            onkeypress="if (event.key === 'Enter') fetchData();"
+          />
+          <button onclick="fetchData()"><i class="fas fa-search"></i></button>
+        </div>
+
+        <div id="dashboard-content">
+          <div class="card profile">
+            <img id="avatar" src="" alt="Profile" />
+            <div>
+              <h2 id="name" style="margin: 0"></h2>
+              <p id="bio" style="color: #94a3b8; font-size: 14px"></p>
+            </div>
+          </div>
+          <div class="card">
+            <h3>Recent Repositories</h3>
+            <div id="repo-list"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar">
+        <h3><i class="fas fa-history"></i> Global Search History</h3>
+        <p style="font-size: 12px; color: #94a3b8">Powered by PostgreSQL</p>
+        <div id="history-list">
+          <div class="history-item">Loading history...</div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Load history
+      window.onload = fetchHistory;
+
+      async function fetchHistory() {
+        try {
+          const res = await fetch("http://localhost:8080/api/history");
+          const history = await res.json();
+          const list = document.getElementById("history-list");
+          list.innerHTML = "";
+          if (history.length === 0) {
+            list.innerHTML = '<div class="history-item">No searches yet.</div>';
+            return;
+          }
+          history.forEach((item) => {
+            const date = new Date(item.searched_at).toLocaleTimeString();
+            list.innerHTML += `<div class="history-item"><strong>${item.username}</strong> <span style="float:right; color:#94a3b8;">${date}</span></div>`;
+          });
+        } catch (e) {
+          document.getElementById("history-list").innerHTML =
+            '<div class="history-item">Database not connected yet.</div>';
+        }
+      }
+
+      async function fetchData() {
+        const username = document.getElementById("username").value;
+        if (!username) return;
+
+        try {
+          const response = await fetch(
+            `http://localhost:8080/api/github/${username}`,
+          );
+          const data = await response.json();
+          if (data.error) throw new Error();
+
+          document.getElementById("avatar").src = data.profile.avatar_url;
+          document.getElementById("name").innerText =
+            data.profile.name || data.profile.login;
+          document.getElementById("bio").innerText =
+            data.profile.bio || "No bio provided.";
+
+          const repoList = document.getElementById("repo-list");
+          repoList.innerHTML = "";
+          data.recentActivity.forEach((repo) => {
+            repoList.innerHTML += `<div style="padding: 10px 0; border-bottom: 1px solid #334155;"><strong><a href="${repo.html_url}" style="color: #60a5fa; text-decoration: none;" target="_blank">${repo.name}</a></strong></div>`;
+          });
+
+          document.getElementById("dashboard-content").style.display = "block";
+          fetchHistory();
+        } catch (error) {
+          alert("User not found!");
+        }
+      }
+    </script>
+  </body>
+</html>

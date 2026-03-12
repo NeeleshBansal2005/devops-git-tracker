@@ -1,0 +1,70 @@
+name: GitTrack Enterprise CI/CD
+
+on:
+  push:
+    branches: ["main", "master"]
+  pull_request:
+    branches: ["main", "master"]
+
+jobs:
+  test:
+    name: Run Automated Tests
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_USER: devopsuser
+          POSTGRES_PASSWORD: devopspass
+          POSTGRES_DB: devopsdb
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis:alpine
+        ports:
+          - 6379:6379
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Run Unit Tests
+        run: npm test
+        env:
+          PORT: 8080
+          DB_HOST: localhost
+          DB_PORT: 5432
+          DB_USER: devopsuser
+          DB_PASSWORD: devopspass
+          DB_NAME: devopsdb
+          REDIS_HOST: localhost
+          REDIS_PORT: 6379
+
+  build:
+    name: Build Docker Image
+    needs: test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Build Docker Image
+        run: docker build -t gittrack-app:latest .
+
+      - name: Build Success
+        run: echo "Docker image built successfully!"
