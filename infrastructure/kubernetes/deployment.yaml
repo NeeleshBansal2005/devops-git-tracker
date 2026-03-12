@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: git-tracker-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: git-tracker
+  template:
+    metadata:
+      labels:
+        app: git-tracker
+    spec:
+      containers:
+      - name: app
+        image: devops-project-git-tracker:latest
+        ports:
+        - containerPort: 8080
+        env:
+        - name: DB_HOST
+          value: "postgres-service"

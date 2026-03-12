@@ -2,6 +2,15 @@
 
 # GitContributionTracker
 
+**Student Name:** [NeeleshBansal]  
+**Registration No:** [23fe10cse00671]  
+**Course:** CSE3253 DevOps [PE6]  
+**Semester:** VI (2025-2026)  
+
+## Technology Stack
+- [cite_start]**Core:** Node.js, Express.js, PostgreSQL, Redis[cite: 26, 27].
+- [cite_start]**DevOps:** Git, GitHub Actions, Docker, Docker Compose[cite: 7, 13, 16].
+
 A full-stack, containerized DevOps application that retrieves and visualizes GitHub user repository intelligence.
 
 ## Features
