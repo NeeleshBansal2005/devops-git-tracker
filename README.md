@@ -6,6 +6,7 @@
 **Registration No:** [23fe10cse00671]  
 **Course:** CSE3253 DevOps [PE6]  
 **Semester:** VI (2025-2026)  
+ppt slides :https://docs.google.com/presentation/d/1etk5-GqM4ZSPatwBUaMSd5lkBs7KR7E8mCOqYz2ONtQ/edit?usp=drivesdk   
 
 ## Technology Stack
 - [cite_start]**Core:** Node.js, Express.js, PostgreSQL, Redis[cite: 26, 27].
@@ -41,7 +42,7 @@ Ensure [Docker](https://docs.docker.com/get-docker/) and Docker Compose are inst
 [ User Browser ] ---> [ Node.js App (Port 8080) ] ---> [ GitHub API ]
 
 
-ppt slides :https://docs.google.com/presentation/d/1etk5-GqM4ZSPatwBUaMSd5lkBs7KR7E8mCOqYz2ONtQ/edit?usp=drivesdk   
+
                              |
                              +---> [ PostgreSQL (Port 5432) ] -> Saves Audit Log
                              |
