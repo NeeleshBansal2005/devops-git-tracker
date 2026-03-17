@@ -39,6 +39,9 @@ Ensure [Docker](https://docs.docker.com/get-docker/) and Docker Compose are inst
 
 ```text
 [ User Browser ] ---> [ Node.js App (Port 8080) ] ---> [ GitHub API ]
+
+
+ppt slides :https://docs.google.com/presentation/d/1etk5-GqM4ZSPatwBUaMSd5lkBs7KR7E8mCOqYz2ONtQ/edit?usp=drivesdk   
                              |
                              +---> [ PostgreSQL (Port 5432) ] -> Saves Audit Log
                              |
