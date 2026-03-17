@@ -1,4 +1,4 @@
-![CI/CD Status](https://github.com/neeleshbansal2005/devops-git-tracker/actions/workflows/ci-cd.yml/badge.svg)
+
 
 # GitContributionTracker
 
